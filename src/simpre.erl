@@ -52,13 +52,13 @@ start_link(RegName) ->
     gen_server:start_link(RegName, ?MODULE, [], []).
 
 update({Name, Ref}, Pid) ->
-    gen_server:cast(Name, {update, Ref, Pid}).
+    gen_server:cast(Name, {update, {Name, Ref}, Pid}).
 
 remove({Name, Ref}) ->
-    gen_server:cast(Name, {remove, Ref}).
+    gen_server:cast(Name, {remove, {Name, Ref}}).
 
 pid({Name, Ref}) ->
-    gen_server:call(Name, {get_pid, Ref}).
+    gen_server:call(Name, {pid, {Name, Ref}}).
 
 stop(Name) ->
     gen_server:stop(Name).
@@ -69,19 +69,19 @@ init([]) ->
     Ets = ets:new(?MODULE, []),
     {ok, Ets}.
 
-handle_call({get_pid, Ref}, _From, Ets) ->
-    Reply = case ets:lookup(Ets, Ref) of
+handle_call({pid, Key}, _From, Ets) ->
+    Reply = case ets:lookup(Ets, Key) of
         [] -> not_found;
-        [{Ref, Pid}] -> {ok, Pid}
+        [{Key, Pid}] -> {ok, Pid}
     end,
     {reply, Reply, Ets}.
 
-handle_cast({update, Ref, Pid}, Ets) ->
-    true = ets:insert(Ets, {Ref, Pid}),
+handle_cast({update, Key, Pid}, Ets) ->
+    true = ets:insert(Ets, {Key, Pid}),
     {noreply, Ets};
 
-handle_cast({remove, Ref}, Ets) ->
-    true = ets:delete(Ets, Ref),
+handle_cast({remove, Key}, Ets) ->
+    true = ets:delete(Ets, Key),
     {noreply, Ets}.
 
 handle_info(_Msg, State) ->
