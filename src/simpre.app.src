@@ -1,0 +1,15 @@
+{application, 'simpre',
+ [{description, "Simple Process Registry"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {applications,
+   [kernel,
+    stdlib
+   ]},
+  {env,[]},
+  {modules, []},
+
+  {maintainers, ["Yuce Tekol"]},
+  {licenses, ["MIT"]},
+  {links, [{"Github", "https://github.com/yuce/simpre.git"}]}
+ ]}.
